@@ -1,0 +1,30 @@
+services:
+  attacker:
+    build: ./attacker
+    container_name: kali_attacker
+    tty: true
+    stdin_open: true
+    privileged: true
+    cap_add:
+      - NET_ADMIN
+    networks:
+      ssl_strip_net:
+        ipv4_address: 172.28.0.10
+    volumes:
+      - ./attacker:/root/attacker_scripts
+
+  web_server:
+    build: ./web_server
+    container_name: bank_server
+    networks:
+      ssl_strip_net:
+        ipv4_address: 172.28.0.20
+    ports:
+      - "5001:5000"
+
+networks:
+  ssl_strip_net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.28.0.0/24
