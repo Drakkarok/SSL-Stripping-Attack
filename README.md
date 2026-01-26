@@ -5,11 +5,11 @@ This repository contains a complete Docker-based environment to demonstrate an *
 
 ## 🏗 Project Architecture
 
-| Component | Technology | Description |
-|-----------|------------|-------------|
-| **Attacker** | Kali Linux Docker | Runs `sslstrip`, `arpspoof`, `tcpdump`, and `iptables`. |
-| **Simulated Bank** | Python Flask | A vulnerable banking application running on port 5000 (mapped to host 5001). |
-| **Victim** | Host Machine | Your web browser interacting with the "Bank". |
+| Component          | Technology        | Description                                                                  |
+| ------------------ | ----------------- | ---------------------------------------------------------------------------- |
+| **Attacker**       | Kali Linux Docker | Runs `sslstrip`, `arpspoof`, `tcpdump`, and `iptables`.                      |
+| **Simulated Bank** | Python Flask      | A vulnerable banking application running on port 5000 (mapped to host 5001). |
+| **Victim**         | Host Machine      | Your web browser interacting with the "Bank".                                |
 
 ## 🚀 Getting Started
 

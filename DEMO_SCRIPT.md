@@ -1,4 +1,4 @@
-Credentials:
+**Credentials**:
 admin
 password123
 
@@ -62,7 +62,7 @@ password123
 2.  **Click**: "Toggle HSTS Protection" (Bottom link).
     *   *Message: "HSTS Protection enabled!"*
 3.  **Try Login Again**:
-    *   In this simulated environment, the browser will likely now refuse to load HTTP resources or the attack script (sslstrip) will fail to downgrade properly because the server is demanding security headers.
+    *   In this simulated environment, the browser will likely now refuse to load HTTP resources or the attack script (sslstrip) will fail to downgrade properly because the server is demanding security headers. (strict-transport-security max-age=31536000; includeSubDomains)
     *   *Note: Real HSTS requires valid HTTPS certificates. In this lab, we demonstrate the header presence.*
 
 ---
