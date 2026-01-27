@@ -44,7 +44,8 @@ def login():
         password = request.form.get('password')
         
         if username in users and users[username] == password:
-            return redirect(url_for('dashboard'))
+            # Use 303 See Other to ensure the client switches to GET for the dashboard
+            return redirect(url_for('dashboard'), code=303)
         else:
             flash('Invalid credentials')
             return redirect(url_for('login'))
@@ -57,4 +58,7 @@ def dashboard():
 
 if __name__ == '__main__':
     # Run on 0.0.0.0 so it's accessible from outside the container
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    # HTTPS Configuration
+    print("Starting secure server on port 443...")
+    context = ('certs/server.crt', 'certs/server.key')
+    app.run(host='0.0.0.0', port=443, ssl_context=context, debug=True)

@@ -20,7 +20,16 @@ services:
       ssl_strip_net:
         ipv4_address: 172.28.0.20
     ports:
-      - "5001:5000"
+      - "5001:80"
+      - "5443:443"
+
+  victim:
+    build: ./victim
+    container_name: victim_client
+    networks:
+      ssl_strip_net:
+        ipv4_address: 172.28.0.30
+    tty: true
 
 networks:
   ssl_strip_net:
